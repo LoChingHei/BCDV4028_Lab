@@ -1,0 +1,46 @@
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.18;
+
+contract CallingContract {
+    enum Status {Pending, Complete} //enum to record status
+    Status status;
+
+    function set(address _calledAddress) external {
+        (bool success, bytes memory returndata) = _calledAddress.delegatecall(
+            abi.encodeWithSelector(
+                TargetContract.changeStatus.selector, //delegatecall to changeStatus function in target contract to change the status of enum.
+                1                                     // The input value is true.
+            )
+        );
+
+        // if the function call reverted
+        if (success == false) {
+            // if there is a return reason string
+            if (returndata.length > 0) {
+                // bubble up any reason for revert
+                assembly {
+                    let returndata_size := mload(returndata)
+                    revert(add(32, returndata), returndata_size)
+                }
+            } else {
+                revert("Function call reverted");
+            }
+        }
+    }
+    function viewstatus()public view returns (Status){ //view current status
+        return status;
+    }
+}
+
+contract TargetContract {
+    enum Status {Pending, Complete}
+    Status status;
+
+    function changeStatus(bool _change) external {
+        if (_change){
+            status = Status.Complete; //if _change is true, the function will change the status of the enum.
+        }
+        
+    }
+
+}
