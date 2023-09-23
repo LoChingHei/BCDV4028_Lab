@@ -1,1 +1,51 @@
+// SPDX-License-Identifier: MIT
+pragma solidity 0.5.17;
 
+library HandleArray{
+    function sort(uint[] storage arr) internal  {
+        uint n = arr.length;
+        bool swapped;
+        do {
+            swapped = false;
+            for (uint i = 1; i < n; i++) {
+                if (arr[i - 1] > arr[i]) {
+                    (arr[i - 1], arr[i]) = (arr[i], arr[i - 1]);
+                    swapped = true;
+                }
+            }
+        } while (swapped);
+    }
+
+    function DelDuplicates(uint[] storage arr) internal{
+        uint n = arr.length;
+        for (uint i = 0; i < n - 1; i++) {
+            for (uint j = i + 1; j < n; j++) {
+                if (arr[i] == arr[j]) {
+                    arr[j] = arr[n - 1];
+                    arr.pop();
+                    n--; 
+                    j--; 
+                }
+            }
+        }
+}}
+
+contract ArrayManipulate{
+    using HandleArray for uint[];
+    uint[] arr = [1,5,3,5,8,9,5,3,5,7,3];
+
+    function viewArr() public view returns (uint[] memory){
+        return arr;
+    }
+    function Sortandduplicates() public {
+        arr.DelDuplicates();
+        arr.sort();
+    }
+    function Sort() public {
+        arr.sort(); 
+    }
+    function DeleteDuplicates() public {
+        arr.DelDuplicates(); 
+    }
+
+}
