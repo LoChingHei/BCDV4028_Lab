@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.5.17;
-
+//library
 library HandleArray{
+    //Sort function in library
     function sort(uint[] storage arr) internal  {
         uint n = arr.length;
         bool swapped;
@@ -15,14 +16,14 @@ library HandleArray{
             }
         } while (swapped);
     }
-
+    //Remove duplicates function in library
     function DelDuplicates(uint[] storage arr) internal{
         uint n = arr.length;
         for (uint i = 0; i < n - 1; i++) {
             for (uint j = i + 1; j < n; j++) {
-                if (arr[i] == arr[j]) {
-                    arr[j] = arr[n - 1];
-                    arr.pop();
+                if (arr[i] == arr[j]) { 
+                    arr[j] = arr[n - 1]; 
+                    arr.pop(); 
                     n--; 
                     j--; 
                 }
@@ -31,19 +32,22 @@ library HandleArray{
 }}
 
 contract ArrayManipulate{
-    using HandleArray for uint[];
-    uint[] arr = [1,5,3,5,8,9,5,3,5,7,3];
+    using HandleArray for uint[]; //Using library HandleArray with uint array
+    uint[] arr = [1,5,3,5,8,9,5,3,5,7,3]; //Unsort array will duplicates
 
     function viewArr() public view returns (uint[] memory){
         return arr;
     }
+    //calling both sort and remove duplicates function in library
     function Sortandduplicates() public {
         arr.DelDuplicates();
         arr.sort();
     }
+    //only calling the sort function in library
     function Sort() public {
         arr.sort(); 
     }
+    // only calling the remove duplicates function in library
     function DeleteDuplicates() public {
         arr.DelDuplicates(); 
     }
