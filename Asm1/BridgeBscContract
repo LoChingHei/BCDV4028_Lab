@@ -1,1 +1,47 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
 
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import './Itoken.sol';
+
+contract BridgeBsc {
+  address public owner;
+  IToken public token;
+
+  enum Step { Burn, Mint }
+  event Transfer(
+    address from,
+    address to,
+    uint amount,
+    uint date,
+    Step indexed step
+  );
+
+  constructor(address _token) {
+    admin = msg.sender;
+    token = IToken(_token);
+  }
+  //burning the ERC token
+  function burn(address to, uint amount) external {
+    token.burn(msg.sender, amount);
+    emit Transfer(
+      msg.sender,
+      to,
+      amount,
+      block.timestamp,
+      Step.Burn
+    );
+  }
+   // only ower of the contract can mine the token
+  function mint(address to, uint amount) external {
+    require(msg.sender == admin, 'only admin');
+    token.mint(to, amount);
+    emit Transfer(
+      msg.sender,
+      to,
+      amount,
+      block.timestamp,
+      Step.Mint
+    );
+  }
+}
