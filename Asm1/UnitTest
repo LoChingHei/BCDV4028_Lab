@@ -1,0 +1,52 @@
+const BridgeContractEth = artifacts.require("BridgeContractEth");
+const IToken = artifacts.require("IToken");
+
+contract("BridgeContractEth", (accounts) => {
+  let BridgeContractEth;
+  let token;
+  const admin = accounts[0];
+  const nonAdmin = accounts[1];
+  const recipient = accounts[2];
+  const otherChainNonce = 1;
+  const amountToBurn = 100;
+  const amountToMint = 100;
+
+  before(async () => {
+    token = await IToken.new();
+    bridgeContractEth = await BridgeContractEth.new(token.address);
+  });
+
+  it("should initialize the contract with the correct admin and token address", async () => {
+    const contractAdmin = await bridgeContractEth.admin();
+    const contractTokenAddress = await bridgeContractEth.token();
+    //check whether the contract is deployed correctly
+    assert.equal(contractAdmin, admin, "Admin address should match the contract deployer's address");
+    assert.equal(contractTokenAddress, token.address, "Token address should match the deployed IToken contract address");
+  });
+
+  it("should allow burning tokens", async () => {
+    await token.mint(admin, amountToBurn);
+    const initialRecipientBalance = await token.balanceOf(recipient);
+    const tx = await bridgeContractEth.burn(recipient, amountToBurn, { from: admin });
+    const finalRecipientBalance = await token.balanceOf(recipient);
+    //Check whether it is successfully burning
+    assert.equal(finalRecipientBalance.toNumber(), initialRecipientBalance.toNumber() + amountToBurn, "Recipient balance should increase by the burned amount");
+    // Check if the Burn event was emitted with the correct data
+    assert.equal(tx.logs.length, 1, "One event should be emitted");
+    const burnEvent = tx.logs[0];
+    assert.equal(burnEvent.event, "Transfer", "Event name should be 'Transfer'");
+  });
+
+  it("should not allow non-admin to mint tokens", async () => {
+    // Try to mint tokens as a non-admin
+    await token.mint(admin, amountToMint); // Ensure there are enough tokens for the test
+    await token.approve(bridgeContractEth.address, amountToMint, { from: nonAdmin });
+
+    await expectRevert(
+      bridgeContractEth.mint(recipient, amountToMint, otherChainNonce, { from: nonAdmin }),
+      "only admin"
+    );
+  });
+});
+
+//Since the two Bridge Contracts have similar structure, only one unit test was performed.
