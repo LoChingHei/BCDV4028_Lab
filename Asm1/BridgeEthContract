@@ -6,17 +6,14 @@ import './Itoken.sol';
 
 contract BridgeEth {
   address public admin;
-  IToken public token;
-  uint public nonce;        
-  mapping(uint => bool) public processedNonces;
+  IToken public token;     
 
   enum Step { Burn, Mint }
-  event Transfer(
+  event Transfer(   //information for transaction.
     address from,
     address to,
     uint amount,
     uint date,
-    uint nonce,                    //to prevent double count in transition
     Step indexed step
   );
 
@@ -32,24 +29,17 @@ contract BridgeEth {
       to,
       amount,
       block.timestamp,
-      nonce,
       Step.Burn
-    );
-    nonce++;
-  }
+    );}
    // only ower of the contract can mine the token
-  function mint(address to, uint amount, uint otherChainNonce) external {
-    require(msg.sender == admin, 'only admin');
-    require(processedNonces[otherChainNonce] == false, 'transfer already processed');
-    processedNonces[otherChainNonce] = true;
+  function mint(address to, uint amount) external {
+    require(msg.sender == admin, 'only admin')
     token.mint(to, amount);
     emit Transfer(
       msg.sender,
       to,
       amount,
       block.timestamp,
-      otherChainNonce,
       Step.Mint
     );
-  }
-}
+}}
