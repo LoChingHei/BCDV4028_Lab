@@ -1,5 +1,7 @@
 <h1>A short video recording demonstrates NFT Minting and Viewing on UI. </h1>
+
 <h4>The file size is to large, so I separated it into two parts. </h4>
+
 https://github.com/LoChingHei/BCDV4028_Lab/assets/145512379/bc6f3a81-ac6a-48c7-841b-72329eb3ca10
 https://github.com/LoChingHei/BCDV4028_Lab/assets/145512379/b592ab65-dca9-4723-993a-957fb5996ad2
 
